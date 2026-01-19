@@ -12,7 +12,7 @@ env_params:
     normalize: true          # Değerleri normalize et (öğrenme kolaylığı)
   action:
     type: "DiscreteMetaAction"
-  duration: 60               # Episode süresi
+  duration: 80               # Episode süresi
   
   # SİMÜLASYON AYARLARI
   simulation_frequency: 15   # Fizik simülasyonu frekansı
@@ -30,7 +30,7 @@ env_params:
   collision_reward: -2.0     # Dengeli ceza (öğrenmeyi bozmaz)
   
   # 2) HIZ → Önü boşken hızlı git
-  high_speed_reward: 0.5     # Hızlı gitmek ödül
+  high_speed_reward: 0.8     # Hızlı gitmek ödül
   reward_speed_range: [20, 30]  # Bu aralıkta tam puan
   
   # 3) ŞERİT → Sollama serbest ama zikzak yapma
