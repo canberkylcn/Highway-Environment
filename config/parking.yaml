@@ -1,0 +1,53 @@
+env_id: "parking-v0"
+render_mode: null
+
+env_params:
+  observation:
+    type: "KinematicsGoal"
+    features: ["x", "y", "vx", "vy", "cos_h", "sin_h"]
+    scales: [100, 100, 5, 5, 1, 1]
+    normalize: False
+  action:
+    type: "ContinuousAction"
+    longitudinal: True
+    lateral: True
+  
+  simulation_frequency: 15
+  policy_frequency: 5
+  duration: 100
+  
+  reward_weights: [1, 0.3, 0.0, 0.0, 0.02, 0.02]
+  collision_reward: -5.0
+  success_goal_reward: 0.12
+
+agent_params:
+  algorithm: "SAC"
+  total_timesteps: 100000 
+  save_path: "models/parking_sac_best_model"
+  tensorboard_log: "logs/tensorboard/"
+  checkpoint_freq: 50000
+  
+  model_params:
+    learning_rate: 0.001
+    buffer_size: 500000
+    batch_size: 256
+    
+    # --- KRİTİK DÜZELTME (CRITICAL FIX) ---
+    # Öğrenmeye başlamadan önce 1000 adım sadece veri topla.
+    # Collect data for 1000 steps before starting to learn.
+    learning_starts: 1000 
+    # --------------------------------------
+    
+    tau: 0.05
+    gamma: 0.95
+    ent_coef: "auto"
+    verbose: 1
+    device: "cpu"
+    
+    policy_kwargs:
+      net_arch: [256, 256, 256]
+    
+    replay_buffer_class: "HerReplayBuffer"
+    replay_buffer_kwargs:
+      n_sampled_goal: 4
+      goal_selection_strategy: "future"

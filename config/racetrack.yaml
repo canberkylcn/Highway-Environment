@@ -1,0 +1,50 @@
+env_id: "racetrack-v0"
+render_mode: null
+
+env_params:
+  observation:
+    # Pistin şeklini (virajları) görmesi için Grid kullanıyoruz
+    type: "OccupancyGrid"
+    features: ["presence", "on_road"]
+    grid_size: [[-18, 18], [-18, 18]]
+    grid_step: [3, 3]
+    as_image: False  # Resim değil sayısal veri olarak al (Hızlı eğitim için)
+
+  action:
+    # KRİTİK AYAR: Sürekli Aksiyon (Direksiyon hassasiyeti)
+    type: "ContinuousAction"
+    longitudinal: True  # Gaz/Fren kontrolü
+    lateral: True       # Direksiyon kontrolü
+    
+  simulation_frequency: 15
+  policy_frequency: 2   # Yarışta tepki süresi önemlidir
+  duration: 300         # Pist uzun, süre uzun olmalı
+  
+  # --- ÖDÜL SİSTEMİ (REWARD SHAPING) ---
+  # Yarış mantığı: Pistte kal + Hızlı git
+  lane_centering_reward: 0.6 # İdeal yarış çizgisini bulmaya çalışır
+  action_reward: -0.3        # Direksiyonu titretirse ceza ver (Smooth sürsün)
+  collision_reward: -1.0     # Duvara çarpma
+  on_road_reward: 1.0        # Pistten çıkma yeter
+
+agent_params:
+  algorithm: "PPO"
+  total_timesteps: 200000    # Yarış pilotu olmak zaman alır
+  save_path: "models/racetrack_ppo_best_model"
+  tensorboard_log: "logs/tensorboard/"
+  checkpoint_freq: 100000
+  
+  model_params:
+    learning_rate: 0.0003    # Hassas öğrenme (Slow and steady)
+    n_steps: 2048
+    batch_size: 64
+    n_epochs: 10
+    gamma: 0.99              # Gelecekteki virajları düşünmeli
+    gae_lambda: 0.95
+    clip_range: 0.2
+    ent_coef: 0.0            # Yarışta macera aranmaz, ideal çizgi izlenir
+    verbose: 1
+    # device: "auto" <-- SİLDİM (DELETED)
+    
+    policy_kwargs:
+      net_arch: [256, 256]   # Büyük beyin
