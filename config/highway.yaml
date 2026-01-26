@@ -21,13 +21,13 @@ env_params:
   # TRAFİK AYARLARI
   lanes_count: 4             # 4 şeritli yol
   vehicles_count: 30         # Orta yoğunlukta trafik (sollama fırsatı için)
-  vehicles_density: 1.5      # Araç yoğunluğu
+  vehicles_density: 1.2      # Araç yoğunluğu
   
   # ===== ÖDÜL AYARLARI =====
   # Toplam ödül = collision + speed + right_lane + lane_change
   
   # 1) ÇARPIŞMA → Kesinlikle yapma
-  collision_reward: -2.0     # Dengeli ceza (öğrenmeyi bozmaz)
+  collision_reward: -3.0     # Dengeli ceza (öğrenmeyi bozmaz)
   
   # 2) HIZ → Önü boşken hızlı git
   high_speed_reward: 0.6     # Hızlı gitmek ödül
@@ -47,17 +47,17 @@ env_params:
 
 agent_params:
   algorithm: "PPO"
-  total_timesteps: 400000
+  total_timesteps: 200000
   save_path: "models/highway_ppo_best_model"
   tensorboard_log: "logs/tensorboard/"
-  checkpoint_freq: 200000
+  checkpoint_freq: 100000
   
   model_params:
     learning_rate: 0.0005
     n_steps: 2048
     batch_size: 64
     n_epochs: 10
-    gamma: 0.99             # Uzun vadeli düşün (sollama planlaması)
+    gamma: 0.95            # Uzun vadeli düşün (sollama planlaması)
     gae_lambda: 0.95
     clip_range: 0.2
     ent_coef: 0.01
