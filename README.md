@@ -14,7 +14,7 @@ Below is the **3-stage progression** (Untrained → Half-Trained → Fully Train
 
 **Embedded GIF (Untrained → Half-Trained → Fully Trained):**
 
-![Merge — Evolution](assets/videos/merge-v0_evolution.gif)
+<img src="assets/videos/merge-v0_evolution.gif" width="960" alt="Merge — Evolution (Untrained → Half-Trained → Fully Trained)" />
 
 **MP4 (side-by-side, 3 columns):** `assets/videos/merge-v0_evolution.mp4`
 
