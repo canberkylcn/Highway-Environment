@@ -12,13 +12,11 @@ Below is the **3-stage progression** (Untrained → Half-Trained → Fully Train
 
 #### Merge (`merge-v0`) — Evolution (3 stages)
 
-**Embedded GIF (recommended for README):**
+**Embedded GIF (Untrained → Half-Trained → Fully Trained):**
 
-![Merge — Untrained](assets/videos/merge_1_untrained.gif)
-![Merge — Half-Trained](assets/videos/merge_2_half_trained.gif)
-![Merge — Fully Trained](assets/videos/merge_3_fully_trained.gif)
+![Merge — Evolution](assets/videos/merge-v0_evolution.gif)
 
-**Single combined MP4 (side-by-side, 3 columns):** `assets/videos/merge-v0_evolution.mp4`
+**MP4 (side-by-side, 3 columns):** `assets/videos/merge-v0_evolution.mp4`
 
 #### Other environments — combined MP4 outputs
 
