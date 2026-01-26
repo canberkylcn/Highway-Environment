@@ -1,20 +1,27 @@
 """
-Create a single "evolution" video from 3-stage videos:
+Create a single "evolution" video from exactly three stages:
+
+  1. Untrained Agent:  acting randomly / failing immediately
+  2. Half-Trained Agent:  learning but still making mistakes (e.g. driving longer, then crash)
+  3. Fully Trained Agent:  successfully solving the task
+
+Input clips (from main.py --mode visualize):
   1_untrained-episode-0.mp4
   2_half_trained-episode-0.mp4
   3_fully_trained-episode-0.mp4
 
-Default output is a side-by-side (3 columns) MP4 with labels, ideal for README.
+Output (required content): sequence OR side-by-side of these three stages, with labels.
+
+  --layout sequence     : Untrained → Half-Trained → Fully Trained (uç uca, concat)
+  --layout side-by-side : Three panels side-by-side (hstack)
 
 Examples:
   python scripts/make_evolution_video.py --env-id merge-v0
   python scripts/make_evolution_video.py --all
+  python scripts/make_evolution_video.py --all --layout side-by-side
 
-Inputs are expected under:
-  logs/videos/<env_id>/
-
-Outputs go to:
-  assets/videos/<env_id>_evolution.mp4
+Inputs:  logs/videos/<env_id>/
+Output:  assets/videos/<env_id>_evolution.mp4
 """
 
 from __future__ import annotations
@@ -63,46 +70,45 @@ def ensure_files_exist(paths: Paths) -> None:
         raise SystemExit(f"Missing input video(s) for {paths.env_id}:\n{missing_str}")
 
 
-def build_filter_complex(font_size: int = 28) -> str:
-    # Scale all to same height; keep aspect ratio; then hstack 3 videos.
-    # Add text labels on each panel.
-    # Note: font selection differs by OS; default font is ok for macOS/Linux.
-    filters: List[str] = []
-    for i, (_, label) in enumerate(STAGES):
-        filters.append(
-            f"[{i}:v]scale=-2:360,setsar=1,drawtext=text='{label}':x=10:y=10:fontsize={font_size}:fontcolor=white:box=1:boxcolor=0x00000099[v{i}]"
-        )
+def _scale_label(w: int, h: int, i: int, label: str, font_size: int = 28) -> str:
+    return (
+        f"[{i}:v]scale={w}:{h}:force_original_aspect_ratio=decrease,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2,setsar=1,"
+        f"drawtext=text='{label}':x=10:y=10:fontsize={font_size}:fontcolor=white:box=1:boxcolor=0x00000099[v{i}]"
+    )
+
+
+def build_filter_sequence(font_size: int = 28) -> str:
+    """Untrained → Half-Trained → Fully Trained, end-to-end (concat)."""
+    w, h = 640, 360
+    filters = [_scale_label(w, h, i, label, font_size) for i, (_, label) in enumerate(STAGES)]
+    filters.append("[v0][v1][v2]concat=n=3:v=1:a=0[outv]")
+    return ";".join(filters)
+
+
+def build_filter_side_by_side(font_size: int = 28) -> str:
+    """Three panels side-by-side (hstack). Same height, labels on each."""
+    w, h = 640, 360
+    filters = [_scale_label(w, h, i, label, font_size) for i, (_, label) in enumerate(STAGES)]
     filters.append("[v0][v1][v2]hstack=inputs=3[outv]")
     return ";".join(filters)
 
 
-def make_side_by_side(paths: Paths, crf: int = 23) -> None:
+def make_evolution(paths: Paths, layout: str, crf: int = 23) -> None:
     ensure_files_exist(paths)
     os.makedirs(os.path.dirname(paths.out_mp4), exist_ok=True)
 
-    filter_complex = build_filter_complex()
+    filter_complex = (
+        build_filter_sequence() if layout == "sequence" else build_filter_side_by_side()
+    )
     cmd = [
-        "ffmpeg",
-        "-y",
-        "-i",
-        paths.inputs[0],
-        "-i",
-        paths.inputs[1],
-        "-i",
-        paths.inputs[2],
-        "-filter_complex",
-        filter_complex,
-        "-map",
-        "[outv]",
-        "-an",
-        "-c:v",
-        "libx264",
-        "-pix_fmt",
-        "yuv420p",
-        "-crf",
-        str(crf),
-        "-preset",
-        "veryfast",
+        "ffmpeg", "-y",
+        "-i", paths.inputs[0],
+        "-i", paths.inputs[1],
+        "-i", paths.inputs[2],
+        "-filter_complex", filter_complex,
+        "-map", "[outv]", "-an",
+        "-c:v", "libx264", "-pix_fmt", "yuv420p",
+        "-crf", str(crf), "-preset", "veryfast",
         paths.out_mp4,
     ]
     run(cmd)
@@ -113,6 +119,8 @@ def detect_env_ids(video_root: str) -> List[str]:
         return []
     envs: List[str] = []
     for name in sorted(os.listdir(video_root)):
+        if name.startswith("."):
+            continue
         full = os.path.join(video_root, name)
         if os.path.isdir(full):
             envs.append(name)
@@ -123,6 +131,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--env-id", help="Env folder under logs/videos (e.g. merge-v0)")
     parser.add_argument("--all", action="store_true", help="Process all env folders under logs/videos/")
+    parser.add_argument("--layout", choices=["sequence", "side-by-side"], default="sequence",
+                        help="sequence = uç uca (concat); side-by-side = 3 panels (hstack)")
     parser.add_argument("--video-root", default="logs/videos", help="Root folder containing per-env video folders")
     parser.add_argument("--outdir", default="assets/videos", help="Output directory")
     parser.add_argument("--crf", type=int, default=23, help="x264 quality (lower is better, larger file)")
@@ -145,8 +155,8 @@ def main() -> int:
         input_dir = os.path.join(video_root, env_id)
         out_mp4 = os.path.join(outdir, f"{env_id}_evolution.mp4")
         paths = Paths(env_id=env_id, input_dir=input_dir, out_mp4=out_mp4)
-        print(f"==> Building evolution video for {env_id}")
-        make_side_by_side(paths, crf=args.crf)
+        print(f"==> Building evolution video for {env_id} (layout={args.layout})")
+        make_evolution(paths, layout=args.layout, crf=args.crf)
         print(f"Saved: {out_mp4}")
 
     return 0

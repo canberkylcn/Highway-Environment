@@ -8,23 +8,29 @@
 
 ### Header & Visual Proof (Evolution)
 
-Below is the **3-stage progression** (Untrained → Half-Trained → Fully Trained) as a single evolution artifact per environment.
+**Required content:** Each evolution video shows exactly three stages—**sequence** or **side-by-side**:
+
+1. **Untrained Agent:** acting randomly / failing immediately  
+2. **Half-Trained Agent:** learning but still making mistakes (e.g. driving longer, then crash)  
+3. **Fully Trained Agent:** successfully solving the task  
+
+We **record** these three stages per env, then **stitch** them via `make_evolution_video.py` (see Reproducibility).
 
 #### Merge (`merge-v0`) — Evolution (3 stages)
 
-**Embedded GIF (Untrained → Half-Trained → Fully Trained):**
+**Embedded GIF (Untrained → Half-Trained → Fully Trained, sequence):**
 
 <img src="assets/videos/merge-v0_evolution.gif" width="960" alt="Merge — Evolution (Untrained → Half-Trained → Fully Trained)" />
 
-**MP4 (side-by-side, 3 columns):** `assets/videos/merge-v0_evolution.mp4`
+**MP4:** `assets/videos/merge-v0_evolution.mp4` (sequence or side-by-side via `--layout`)
 
-#### Other environments — combined MP4 outputs
+#### Other environments — evolution MP4s
 
 - **Intersection:** `assets/videos/intersection-v1_evolution.mp4`
 - **Parking:** `assets/videos/parking-v0_evolution.mp4`
 - **Roundabout:** `assets/videos/roundabout-v0_evolution.mp4`
 
-> If you want **embedded** evolution for each env, convert these MP4s to GIF and embed similarly.
+> Convert MP4s to GIF and embed similarly if you want inline evolution for other envs.
 
 ---
 
@@ -99,19 +105,34 @@ This repo trains SB3 agents per scenario via `config/*.yaml` and `src/agents/sb3
 
 ### Reproducibility (How to run)
 
+**1. Record the three stages** (Untrained, Half-Trained, Fully Trained) per environment:
+
 ```bash
 pip install -r requirements.txt
 
-# Train
+# Train (saves untrained, half-trained at 50%, and fully trained)
 python3 main.py --env merge --mode train
 
-# Generate 3-stage videos (untrained/half/full)
+# Record 3-stage videos: 1_untrained, 2_half_trained, 3_fully_trained → logs/videos/<env>/
 python3 main.py --env merge --mode visualize
+```
 
-# Combine 3-stage videos into one MP4 per env
+**2. Stitch** them into a single evolution video (sequence or side-by-side):
+
+```bash
+# Sequence (uç uca): Untrained → Half-Trained → Fully Trained
 python3 scripts/make_evolution_video.py --all
 
-# Export TensorBoard scalars to PNG (for README graphs)
+# Side-by-side (3 panels)
+python3 scripts/make_evolution_video.py --all --layout side-by-side
+```
+
+Output: `assets/videos/<env_id>_evolution.mp4`.
+
+**3. Optional:** Export TensorBoard scalars to PNG, convert MP4→GIF for README:
+
+```bash
 python3 scripts/export_tb_report.py --logdir logs/tensorboard --outdir assets
+# e.g. ffmpeg -i assets/videos/merge-v0_evolution.mp4 -vf "fps=12,scale=960:-1" ... merge-v0_evolution.gif
 ```
 
