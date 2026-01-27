@@ -333,10 +333,79 @@ Reinforcement Learning is notoriously sensitive to hyperparameter tuning and rew
 * **The Solution:** We introduced a high penalty for steering magnitude (`action_reward: -100`) and tuned the PPO `clip_range`. This forced the policy to favor smooth, continuous steering actions over jerky movements, resembling a professional racing line.
 
 
-## Reproducibility
+## 🔄 Reproducibility
 
-### Train
+### 📦 Prerequisites
+
+- Python 3.11+
+- pip or conda
+- FFmpeg (optional, for video recording)
+
+### 🚀 Installation
+
+```bash
+# Clone repository
+git clone https://github.com/canberkylcn/Highway-Environment.git
+cd Highway-Environment
+
+# Create virtual environment (optional)
+python3 -m venv venv
+source venv/bin/activate  # or: venv\Scripts\activate (Windows)
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 🎯 Usage
+
+#### Training
 ```bash
 python3 main.py --env merge --mode train
 python3 main.py --env intersection --mode train
 python3 main.py --env parking --mode train
+python3 main.py --env racetrack --mode train
+```
+
+**Training Time:** ~2-3 hours (8 parallel envs, CPU)
+
+#### Testing
+```bash
+python3 main.py --env merge --mode test
+python3 main.py --env intersection --mode test
+python3 main.py --env parking --mode test
+python3 main.py --env racetrack --mode test
+```
+
+#### Visualization (Generate 3-stage videos)
+```bash
+python3 main.py --env merge --mode visualize
+python3 main.py --env intersection --mode visualize
+python3 main.py --env parking --mode visualize
+python3 main.py --env racetrack --mode visualize
+```
+
+Videos saved to: `logs/videos/{env_id}/`
+
+### 📊 Monitor Training
+
+```bash
+tensorboard --logdir logs/tensorboard
+```
+
+Open browser to `http://localhost:6006`
+
+### 📈 Export Graphs as PNG
+
+```bash
+python scripts/export_tb_report.py --logdir logs/tensorboard --outdir assets
+```
+#### Create Side-by-Side Evolution Video
+
+Generate a single video showing all 3 stages side-by-side:
+
+```bash
+# For all environments
+python scripts/make_evolution_video.py --all --layout side-by-side
+
+# For specific environment
+python scripts/make_evolution_video.py --env-id merge-v0 --layout sequence
