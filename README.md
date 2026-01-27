@@ -207,15 +207,25 @@ $$
 
 ## Training Analysis
 
-### Merge Reward Curve
-[DRAG YOUR GRAPH: assets/tb/merge-v0/rollout__ep_rew_mean__PPO_1.png]
+## 📈 Training Analysis: Merge Scenario
 
-**Analysis:** 
-- Phase 1 (0-500): Low reward, random exploration
-- Phase 2 (500-1800): Sharp climb as agent discovers merging
-- Phase 3 (1800+): Plateaus at +20 ± 2, convergence achieved
+### 1. Episode Length (Survival) Analysis
+**The Graph:**
+![Episode Length Mean](<img width="1424" height="700" alt="rollout__ep_len_mean__PPO_1" src="https://github.com/user-attachments/assets/089461e7-73e0-46b0-a918-dddcf333b5dc" />)
 
-**Key:** Removing lane-change penalty was transformative.
+**The Commentary:**
+The graph above illustrates the mean episode length over 200,000 timesteps. In the `merge-v0` environment, a short episode typically indicates an immediate collision.
+* **Early Phase (0 - 50k steps):** We observe a sharp incline from ~8 steps to ~15 steps. This indicates that the agent quickly learned the fundamental safety constraints: "Do not crash immediately." The removal of the `lane_change_reward` penalty allowed the agent to explore lateral movements freely without negative feedback.
+* **Convergence (125k+ steps):** The curve plateaus around 17 steps. This stability suggests the agent has mastered the merging maneuver and consistently completes the scenario without terminating early due to accidents. The steadiness of the plateau confirms that PPO found a robust policy.
+
+### 2. Value Loss Analysis
+**The Graph:**
+![Value Loss](<img width="1423" height="700" alt="train__value_loss__PPO_1" src="https://github.com/user-attachments/assets/9756b84f-2cb5-47d5-b309-608c1d0cbccd" />)
+
+**The Commentary:**
+The Value Loss graph represents the error between the Critic network's predicted return and the actual return.
+* **Rapid Learning:** The loss drops significantly in the first 75,000 steps (from 1.4 to 0.2). This correlates perfectly with the increase in episode length, showing that as the agent survived longer, the Critic became much better at estimating the value of states.
+* **Stability:** The loss stabilizes near 0.1 after 125,000 steps, indicating that the training has converged and further training would yield diminishing returns. This validates our choice of 200,000 total timesteps as an optimal stopping point.
 
 ---
 
