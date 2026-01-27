@@ -23,17 +23,21 @@
 
 ## Methodology
 
-### Merge Reward Function
+## Merge Reward Function
 
-$$R_t = R_{collision} + R_{speed} + R_{lane\_change} + R_{right\_lane}$$
+The reward function is designed to encourage the agent to merge safely into traffic and maintain high speed, without penalizing necessary lane changes.
 
-- $R_{collision} = -2.0$
-- $R_{speed} = 1.0$ (when v in [20,35] m/s)
-- $R_{lane\_change} = 0$ (CRITICAL: No penalty)
-- $R_{right\_lane} = 0.0$
+$$
+R_{t} = R_{collision} + R_{speed} + R_{lane\_change}
+$$
 
-**State:** 5 vehicles × 7 features  
-**Actions:** 3 discrete (Left, Straight, Right)
+* **$R_{collision}$**: Terminal penalty for colliding with other vehicles.
+* **$R_{speed}$**: Reward for driving at high speed (mapped linearly to the speed range $[20, 30]$ m/s).
+* **$R_{lane\_change} = 0$**: **CRITICAL.** No penalty is applied for lane changes to allow the agent to freely merge into the highway traffic.
+* **$R_{right\_lane} \approx 0$**: Unlike highway driving, keeping to the rightmost lane is not strictly enforced during the merging phase.
+
+**State:** Kinematics (List of 5 observed vehicles $\times$ 7 features: `[presence, x, y, vx, vy, cos_h, sin_h]`)
+**Actions:** DiscreteMetaAction (5 discrete actions: `[LANE_LEFT, LANE_RIGHT, IDLE, FASTER, SLOWER]`)
 
 ---
 
