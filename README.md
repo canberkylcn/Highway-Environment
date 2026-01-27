@@ -211,7 +211,7 @@ $$
 
 ### 1. Episode Length (Survival) Analysis
 **The Graph:**
-![Episode Length Mean](<img width="1424" height="700" alt="rollout__ep_len_mean__PPO_1" src="https://github.com/user-attachments/assets/089461e7-73e0-46b0-a918-dddcf333b5dc" />)
+
 <img width="1423" height="700" alt="train__value_loss__PPO_1" src="https://github.com/user-attachments/assets/9756b84f-2cb5-47d5-b309-608c1d0cbccd" />
 
 **The Commentary:**
@@ -221,7 +221,8 @@ The graph above illustrates the mean episode length over 200,000 timesteps. In t
 
 ### 2. Value Loss Analysis
 **The Graph:**
-![Value Loss](<img width="1423" height="700" alt="train__value_loss__PPO_1" src="https://github.com/user-attachments/assets/9756b84f-2cb5-47d5-b309-608c1d0cbccd" />)
+
+<img width="1423" height="700" alt="train__value_loss__PPO_1" src="https://github.com/user-attachments/assets/9756b84f-2cb5-47d5-b309-608c1d0cbccd" />
 
 **The Commentary:**
 The Value Loss graph represents the error between the Critic network's predicted return and the actual return.
