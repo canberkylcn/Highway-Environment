@@ -19,25 +19,26 @@ env_params:
   action:
     type: "DiscreteMetaAction"
 
+  target_speeds: [0, 8, 16]
   simulation_frequency: 15
   policy_frequency: 1
   duration: 20
   
   # Ödül Ayarları (Dengeli / Balanced)
-  collision_reward: -2.0
+  collision_reward: -2.5
   lane_change_reward: -0.05
   right_lane_reward: 0.1
   high_speed_reward: 0.2
 
 agent_params:
   algorithm: "PPO"
-  total_timesteps: 100000   
+  total_timesteps: 300000   
   save_path: "models/roundabout_ppo_best_model"
   tensorboard_log: "logs/tensorboard/"
-  checkpoint_freq: 50000
+  checkpoint_freq: 150000
   
   model_params:
-    learning_rate: 0.0003
+    learning_rate: 0.0005
     n_steps: 2048
     batch_size: 64
     n_epochs: 10

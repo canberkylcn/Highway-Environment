@@ -3,40 +3,56 @@ render_mode: null
 
 env_params:
   observation:
-    # Pistin şeklini (virajları) görmesi için Grid kullanıyoruz
-    type: "OccupancyGrid"
-    features: ["presence", "on_road"]
+    type: OccupancyGrid
+    features:
+      - presence
+      - on_road
+      - x
+      - y
+      - vx
+      - vy
+      - cos_h
+      - sin_h
+      - long_off
+      - lat_off
+      - ang_off
     grid_size: [[-18, 18], [-18, 18]]
     grid_step: [3, 3]
-    as_image: False  # Resim değil sayısal veri olarak al (Hızlı eğitim için)
-
+    as_image: false
+    align_to_vehicle_axes: true
   action:
-    # KRİTİK AYAR: Sürekli Aksiyon (Direksiyon hassasiyeti)
-    type: "ContinuousAction"
-    longitudinal: True  # Gaz/Fren kontrolü
-    lateral: True       # Direksiyon kontrolü
-    
+    type: ContinuousAction
+    longitudinal: false
+    lateral: true
+    target_speeds: [0, 4.5, 9]
   simulation_frequency: 15
-  policy_frequency: 2   # Yarışta tepki süresi önemlidir
-  duration: 300         # Pist uzun, süre uzun olmalı
-  
-  # --- ÖDÜL SİSTEMİ (REWARD SHAPING) ---
-  # Yarış mantığı: Pistte kal + Hızlı git
-  lane_centering_reward: 0.6 # İdeal yarış çizgisini bulmaya çalışır
-  action_reward: -0.3        # Direksiyonu titretirse ceza ver (Smooth sürsün)
-  collision_reward: -1.0     # Duvara çarpma
-  on_road_reward: 1.0        # Pistten çıkma yeter
+  policy_frequency: 5
+  duration: 120
+  collision_reward: -1000
+  lane_centering_cost: 4
+  lane_centering_reward: 1
+  lane_change_reward: -0.05
+  action_reward: -100
+  controlled_vehicles: 1
+  other_vehicles: 3
+  screen_width: 1000
+  screen_height: 1000
+  centering_position: [0.5, 0.5]
+  speed_limit: 9.0
+  terminate_off_road: true  # CL: terminate if car goes off-road
+  length: 100               # CL: length of straight; 0: random number form [100,200]
+  no_lanes: 3               # CL: no. of lanes; 0: random number form [2,7]
 
 agent_params:
   algorithm: "PPO"
-  total_timesteps: 200000    # Yarış pilotu olmak zaman alır
+  total_timesteps: 300000    # Yarış pilotu olmak zaman alır
   save_path: "models/racetrack_ppo_best_model"
   tensorboard_log: "logs/tensorboard/"
-  checkpoint_freq: 100000
+  checkpoint_freq: 150000
   
   model_params:
     learning_rate: 0.0003    # Hassas öğrenme (Slow and steady)
-    n_steps: 2048
+    n_steps: 1024
     batch_size: 64
     n_epochs: 10
     gamma: 0.99              # Gelecekteki virajları düşünmeli
@@ -47,4 +63,10 @@ agent_params:
     # device: "auto" <-- SİLDİM (DELETED)
     
     policy_kwargs:
-      net_arch: [256, 256]   # Büyük beyin
+  net_arch:
+    - pi:
+        - 256
+        - 256
+      vf:
+        - 256
+        - 256

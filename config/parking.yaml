@@ -22,13 +22,13 @@ env_params:
 
 agent_params:
   algorithm: "SAC"
-  total_timesteps: 100000 
+  total_timesteps: 400000 
   save_path: "models/parking_sac_best_model"
   tensorboard_log: "logs/tensorboard/"
-  checkpoint_freq: 50000
+  checkpoint_freq: 200000
   
   model_params:
-    learning_rate: 0.001
+    learning_rate: 0.004
     buffer_size: 500000
     batch_size: 256
     
