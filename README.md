@@ -124,6 +124,13 @@ $$
 
 ### Merge - PPO
 
+
+* **Algorithm (PPO):** Chosen over DQN for its stability in high-risk environments. PPO's clipped objective prevents catastrophic policy updates during collisions, which is crucial for the dynamic physics of merging.
+* **Reward Shaping (`lane_change_reward: 0`):** We removed the standard lane-change penalty. Since the task's primary goal is to merge, penalizing lateral movement would create a conflicting objective and cause the agent to hesitate.
+* **Discount Factor (`gamma: 0.9`):** Reduced from standard 0.99 to 0.9. Merging is a short-horizon task (30s duration); this forces the agent to prioritize immediate gaps and survival rather than long-term planning.
+* **Entropy (`ent_coef: 0.01`):** A small entropy bonus is added to prevent the agent from getting stuck in a local optimum of "staying in the acceleration lane" to avoid risk.
+
+
 | Param | Value |
 |-------|-------|
 | Learning Rate | 0.0003 |
