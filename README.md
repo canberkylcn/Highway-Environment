@@ -169,6 +169,12 @@ $$
 
 ### Parking - SAC+HER
 
+* **Algorithm (SAC - Soft Actor-Critic):** SAC was chosen because parking requires precise, **continuous control** of steering and acceleration. Unlike PPO, SAC is an off-policy algorithm that is highly sample-efficient, making it ideal for learning fine-motor tasks like parking where small adjustments matter.
+* **Technique (HER - Hindsight Experience Replay):** **CRITICAL.** Parking is a "goal-conditioned" task with sparse rewards (it is difficult to hit the exact spot by chance). HER allows the agent to learn from failure by treating achieved states as if they were the intended goals, drastically speeding up convergence.
+* **Reward Weights (`x:1.0` vs `y:0.3`):** We customized the reward function to prioritize longitudinal alignment ($x$) over lateral offset ($y$). This encourages the agent to enter the parking spot deeply rather than just hovering near the side.
+* **Hyperparameter (`learning_starts: 1000`):** Added to ensure the replay buffer is populated with enough random transitions before the gradient updates begin. This stabilizes the initial training phase for the SAC critic networks.
+
+
 | Param | Value |
 |-------|-------|
 | net_arch | [256, 256, 256] |
@@ -180,6 +186,11 @@ $$
 | Total Steps | 100,000 |
 
 ### Racetrack - PPO
+
+* **Algorithm (PPO):** Selected for its ability to handle **continuous action spaces** (steering angles) effectively. PPO provides smoother policy updates compared to value-based methods, which is crucial for maintaining control at high speeds.
+* **Observation (Occupancy Grid):** Chosen over simple kinematics to give the agent **spatial awareness**. The 12x12 grid allows the agent to "see" upcoming curves and track boundaries, enabling proactive rather than reactive steering.
+* **Reward Shaping (Action Penalty -100):** A high penalty on steering magnitude was added to force **smooth driving** and prevent unrealistic oscillating (zig-zag) behaviors.
+* **Safety First:** The strict collision penalty (-1000) combined with `terminate_off_road: true` ensures the agent prioritizes staying on track as the absolute prerequisite.
 
 | Param | Value |
 |-------|-------|
