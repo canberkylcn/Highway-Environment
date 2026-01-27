@@ -1,7 +1,7 @@
 # 🚗 Highway Environment — Reinforcement Learning Final Report
 
-**Author:** Canberk Yalçın  
-**Date:** January 2026
+**Author:** Canberk Yalçın , Bahar Gencer , Ali Sokullu
+**Date:** 27 January 2026
 
 ---
 
@@ -88,7 +88,10 @@ $$
 | Learning Rate | 0.0003 |
 | n_steps | 2048 |
 | batch_size | 64 |
+| n_epochs| 10 |
 | gamma | 0.9 |
+| gae_lambda |0.95 |
+| clip_range | 0.2 |
 | Total Steps | 200,000 |
 | Parallel Envs | 8 |
 
@@ -96,26 +99,42 @@ $$
 
 | Param | Value |
 |-------|-------|
+| net_arch | [256, 256] |
 | Learning Rate | 0.0005 |
-| buffer_size | 15,000 |
+| buffer_size | 50,000 |
 | batch_size | 32 |
-| gamma | 0.95 |
-| Total Steps | 100,000 |
+| gamma | 0.99 |
+| learning_starts | 1000 |
+| train_freq | 4 |
+| gradient_steps | 1 |
+| target_update_interval | 1000 |
+| exploration_fraction | 0.3 |
+| exploration_initial_eps | 1.0 |
+| exploration_final_eps | 0.5 |
+| Total Steps | 300,000 |
 
 ### Parking - SAC+HER
 
 | Param | Value |
 |-------|-------|
-| Learning Rate | 0.001 |
+| net_arch | [256, 256, 256] |
+| Learning Rate | 0.004 |
 | buffer_size | 500,000 |
 | batch_size | 256 |
 | gamma | 0.95 |
+| tau | 0.05 |
 | Total Steps | 100,000 |
 
 ### Racetrack - PPO
 
 | Param | Value |
 |-------|-------|
+| net_arch | - pi:
+        - 256
+        - 256
+      vf:
+        - 256
+        - 256 |
 | Learning Rate | 0.0003 |
 | n_steps | 1024 |
 | batch_size | 64 |
