@@ -8,16 +8,16 @@
 ## 📹 Evolution Videos
 
 ### Merge (merge-v0) — PPO
-[DRAG YOUR VIDEO: assets/videos/merge-v0_evolution.mp4]
+![Video Placeholder](https://github.com/user-attachments/assets/c39dfeb0-09c6-41e3-aedd-9978d4bf9040)
 
 ### Intersection (intersection-v1) — DQN
-[DRAG YOUR VIDEO: assets/videos/intersection-v1_evolution.mp4]
+![Video Placeholder](https://github.com/user-attachments/assets/87489532-40b7-43e8-a007-6e1d73ec757a)
 
 ### Parking (parking-v0) — SAC+HER
-[DRAG YOUR VIDEO: assets/videos/parking-v0_evolution.mp4]
+![Video Placeholder](https://github.com/user-attachments/assets/90f96ec3-6e31-4d7e-8e75-82249a405d7a)
 
 ### Racetrack (racetrack-v0) — PPO
-[DRAG YOUR VIDEO: assets/videos/merge-v0_evolution.mp4]
+[![Video Placeholder](https://github.com/user-attachments/assets/3cb6acca-7b86-4382-98fd-4ccbf14d3b95)
 
 ---
 
