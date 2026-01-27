@@ -233,16 +233,30 @@ The Value Loss graph represents the error between the Critic network's predicted
 
 ## 📈 Training Analysis: Intersection Scenario
 
-### Episode Length (Efficiency) Analysis
+## 📈 Training Analysis: Intersection Scenario (DQN)
+
+### 1. Reward Mean Analysis (Strategy Shift)
 **The Graph:**
 
-<img width="1424" height="700" alt="rollout__ep_len_mean__DQN_2" src="https://github.com/user-attachments/assets/68fbb560-5634-4ffc-9fc9-db1136e84517" />
+<img width="1424" height="700" alt="rollout__ep_rew_mean__DQN_1" src="https://github.com/user-attachments/assets/498dffac-4ffd-45e6-afd8-1e0223edcec7" />
+
 
 **The Commentary:**
-The graph above shows the mean episode length over 100,000 timesteps for the DQN agent. Unlike the Merge scenario where "longer is better," in the Intersection task, a decrease in episode length often signifies **efficiency**.
-* **Exploration Phase (0 - 5k steps):** The sharp spike to ~10.5 indicates the agent initially learned to survive by being overly cautious or hesitant, waiting at the intersection to avoid penalties.
-* **Optimization Phase (5k - 20k steps):** We observe a significant decrease in episode length (from 10.5 down to ~7.5). This is the "Aha! moment." The agent realized that simply waiting does not yield the maximum reward. Instead, it learned to navigate to the destination 'o1' quickly to secure the `arrived_reward` (+10).
-* **Convergence (20k - 100k steps):** The graph stabilizes around 7.5. This steady state proves the agent has found an optimal path and speed profile to cross the intersection safely and efficiently without unnecessary delays.
+The graph above displays the mean reward over 300,000 timesteps using the DQN algorithm.
+* **The "Safety Peak" (0 - 50k steps):** We observe a rapid increase in rewards, peaking around 5.5. During this phase, the agent likely discovered a "conservative" strategy—such as waiting at the intersection or moving very slowly to avoid collisions at all costs. This maximizes the survival time but does not necessarily solve the traffic flow problem efficiently.
+* **The Correction (50k - 70k steps):** There is a noticeable drop in rewards. This typically occurs when the exploration rate ($\epsilon$) decays, forcing the agent to rely on its learned Q-values rather than random safe actions. The agent effectively "broke out" of the local optimum of simply waiting and started attempting to navigate the intersection more aggressively.
+* **Stability (75k - 300k steps):** The reward stabilizes and oscillates around 4.0. This indicates the agent found a sustainable balance between **risk (crossing)** and **safety (yielding)**. It is no longer "gaming" the system by waiting indefinitely but is actively engaging with the traffic.
+
+### 2. Episode Length Analysis (Efficiency vs. Patience)
+**The Graph:**
+
+<img width="1424" height="700" alt="rollout__ep_len_mean__DQN_1" src="https://github.com/user-attachments/assets/5e4a559c-4e20-4492-bb09-5803419ecdef" />
+
+
+**The Commentary:**
+The episode length graph correlates strongly with the reward curve and explains the behavior shift.
+* **The "Waiting Game" (0 - 50k steps):** The episode length rises drastically to ~22 steps. This confirms our hypothesis that the agent initially learned to wait for long periods to accumulate "existence rewards" (or avoid negative collision rewards).
+* **Efficiency Optimization (70k+ steps):** As the reward stabilized, the average episode length dropped to ~14-15 steps. **This is a positive outcome.** It signifies that the agent learned to cross the intersection more efficiently (faster), reducing the time spent blocking traffic, which is the ultimate goal of an autonomous intersection manager.
 
 ---
 
