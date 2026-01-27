@@ -16,10 +16,8 @@ def record_agent_run(env: gym.Env, model: BaseAlgorithm, video_folder: str, name
     
     for _ in range(steps):
         if model is None:
-            # Random Action
             action = env.action_space.sample()
         else:
-            # Agent Action
             action, _ = model.predict(obs, deterministic=True)
 
         obs, reward, terminated, truncated, info = env.step(action)

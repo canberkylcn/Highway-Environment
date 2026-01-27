@@ -8,27 +8,25 @@ env_params:
     features: ["presence", "x", "y", "vx", "vy", "cos_h", "sin_h"]
   action:
     type: "DiscreteMetaAction"
-  duration: 30  # Merge işlemi kısa sürer (Merge is short)
+  duration: 30  
   simulation_frequency: 5
   policy_frequency: 1
   
-  # ÖNEMLİ: Merge yapması için şerit değiştirmeyi cezalandırmıyoruz!
-  # IMPORTANT: We don't penalize lane changing so it can merge!
   lane_change_reward: 0 
 
 agent_params:
   algorithm: "PPO"
-  total_timesteps: 200000 # Biraz daha zor olduğu için adımı artırdık
+  total_timesteps: 200000 
   save_path: "models/merge_ppo_best_model"
   tensorboard_log: "logs/tensorboard/"
   checkpoint_freq: 100000
   
   model_params:
-    learning_rate: 0.0003 # Biraz daha yavaş ve dikkatli öğrensin
+    learning_rate: 0.0003 
     n_steps: 2048
     batch_size: 64
     n_epochs: 10
-    gamma: 0.9  # Geleceği biraz daha fazla düşünsün (Merge sonrası hızlanma)
+    gamma: 0.9  
     gae_lambda: 0.95
     clip_range: 0.2
     ent_coef: 0.01

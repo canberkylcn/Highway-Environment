@@ -1,28 +1,3 @@
-"""
-Create a single "evolution" video from exactly three stages:
-
-  1. Untrained Agent:  acting randomly / failing immediately
-  2. Half-Trained Agent:  learning but still making mistakes (e.g. driving longer, then crash)
-  3. Fully Trained Agent:  successfully solving the task
-
-Input clips (from main.py --mode visualize):
-  1_untrained-episode-0.mp4
-  2_half_trained-episode-0.mp4
-  3_fully_trained-episode-0.mp4
-
-Output (required content): sequence OR side-by-side of these three stages, with labels.
-
-  --layout sequence     : Untrained → Half-Trained → Fully Trained (uç uca, concat)
-  --layout side-by-side : Three panels side-by-side (hstack)
-
-Examples:
-  python scripts/make_evolution_video.py --env-id merge-v0
-  python scripts/make_evolution_video.py --all
-  python scripts/make_evolution_video.py --all --layout side-by-side
-
-Inputs:  logs/videos/<env_id>/
-Output:  assets/videos/<env_id>_evolution.mp4
-"""
 
 from __future__ import annotations
 

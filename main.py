@@ -29,21 +29,19 @@ def main():
         print(f"CRITICAL ERROR: Config file not found! {e}")
         return
     
-    env_name = config['env_id'] # Örn: highway-v0, merge-v0
+    env_name = config['env_id'] 
 
     if args.mode == 'train':
         agent_manager = SB3AgentManager(config=config, env=None, mode='train')
         agent_manager.train()
-        agent_manager.save_fully_trained() # İsim değişikliği (Name change)
+        agent_manager.save_fully_trained() 
 
     else:
-        # Test ve Visualize için tekli ortam
         base_env = gym.make(config['env_id'], render_mode='rgb_array')
         env = HighwayConfigWrapper(base_env, config['env_params'])
         agent_manager = SB3AgentManager(config=config, env=env, mode='test')
 
         if args.mode == 'test':
-            # Test için fully trained model yüklenir
             final_path = f"models/{env_name}/fully_trained_{env_name}_model.zip"
             try:
                 agent_manager.load(final_path)
@@ -63,7 +61,6 @@ def main():
             video_folder = f"logs/videos/{env_name}"
             os.makedirs(video_folder, exist_ok=True)
 
-            # --- 1. UNTRAINED ---
             untrained_path = f"models/{env_name}/untrained_{env_name}_model.zip"
             print(f"1. Recording Untrained ({untrained_path})...")
             
@@ -74,7 +71,6 @@ def main():
                 print("   File not found! Using random.")
                 record_agent_run(env, model=None, video_folder=video_folder, name_prefix="1_untrained_random")
 
-            # --- 2. HALF-TRAINED ---
             half_path = f"models/{env_name}/half_trained_{env_name}_model.zip"
             print(f"2. Recording Half-Trained ({half_path})...")
             
@@ -84,7 +80,6 @@ def main():
             else:
                 print("   Half-trained file not found.")
             
-            # --- 3. FULLY TRAINED ---
             full_path = f"models/{env_name}/fully_trained_{env_name}_model.zip"
             print(f"3. Recording Fully Trained ({full_path})...")
             

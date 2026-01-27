@@ -24,7 +24,6 @@ env_params:
   policy_frequency: 1
   duration: 20
   
-  # Ödül Ayarları (Dengeli / Balanced)
   collision_reward: -2.5
   lane_change_reward: -0.05
   right_lane_reward: 0.1

@@ -32,11 +32,8 @@ agent_params:
     buffer_size: 500000
     batch_size: 256
     
-    # --- KRİTİK DÜZELTME (CRITICAL FIX) ---
-    # Öğrenmeye başlamadan önce 1000 adım sadece veri topla.
-    # Collect data for 1000 steps before starting to learn.
+    
     learning_starts: 1000 
-    # --------------------------------------
     
     tau: 0.05
     gamma: 0.95

@@ -39,28 +39,27 @@ env_params:
   screen_height: 1000
   centering_position: [0.5, 0.5]
   speed_limit: 9.0
-  terminate_off_road: true  # CL: terminate if car goes off-road
-  length: 100               # CL: length of straight; 0: random number form [100,200]
-  no_lanes: 3               # CL: no. of lanes; 0: random number form [2,7]
+  terminate_off_road: true  
+  length: 100               
+  no_lanes: 3               
 
 agent_params:
   algorithm: "PPO"
-  total_timesteps: 300000    # Yarış pilotu olmak zaman alır
+  total_timesteps: 300000    
   save_path: "models/racetrack_ppo_best_model"
   tensorboard_log: "logs/tensorboard/"
   checkpoint_freq: 150000
   
   model_params:
-    learning_rate: 0.0003    # Hassas öğrenme (Slow and steady)
+    learning_rate: 0.0003    
     n_steps: 1024
     batch_size: 64
     n_epochs: 10
-    gamma: 0.99              # Gelecekteki virajları düşünmeli
+    gamma: 0.99              
     gae_lambda: 0.95
     clip_range: 0.2
-    ent_coef: 0.0            # Yarışta macera aranmaz, ideal çizgi izlenir
+    ent_coef: 0.0            
     verbose: 1
-    # device: "auto" <-- SİLDİM (DELETED)
     
     policy_kwargs:
   net_arch:

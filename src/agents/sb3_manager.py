@@ -1,12 +1,10 @@
 import os
 from typing import Dict, Any, Optional, Callable
-# YENİ IMPORTLAR (SAC ve HER)
 from stable_baselines3 import DQN, PPO, SAC
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import CheckpointCallback, CallbackList
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import SubprocVecEnv
-# HER Replay Buffer Import
 from stable_baselines3 import HerReplayBuffer 
 
 import gymnasium as gym
@@ -14,22 +12,13 @@ from src.wrappers.highway_wrapper import HighwayConfigWrapper
 from src.utils.callbacks import SaveHalfwayCallback
 
 def linear_schedule(initial_value: float) -> Callable[[float], float]:
-    """
-    Linear learning rate schedule.
-    :param initial_value: Initial learning rate.
-    :return: schedule that computes current learning rate depending on remaining progress
-    """
+   
     def func(progress_remaining: float) -> float:
-        """
-        Progress will decrease from 1 (beginning) to 0.
-        :param progress_remaining:
-        :return: current learning rate
-        """
+        
         return progress_remaining * initial_value
     return func
 
 class SB3AgentManager:
-    # ... (__init__ kısmı AYNI / SAME)
     def __init__(self, config: Dict[str, Any], env: Optional[gym.Env] = None, mode: str = 'train'):
         self.config = config
         self.agent_params = config['agent_params']
@@ -53,26 +42,20 @@ class SB3AgentManager:
         algo_name = self.agent_params['algorithm'].upper()
         model_kwargs = self.agent_params.get('model_params', {}).copy() # Kopyasını al ki orijinali bozulmasın
         
-        # --- LEARNING RATE SCHEDULE ---
-        # Config'deki sabit sayıyı (örn: 0.0005) linear schedule fonksiyonuna çevirir.
-        # Bu sayede eğitim ilerledikçe learning rate azalır ve model daha iyi yakınsar.
         if 'learning_rate' in model_kwargs and isinstance(model_kwargs['learning_rate'], (float, int)):
             model_kwargs['learning_rate'] = linear_schedule(model_kwargs['learning_rate'])
 
         tb_log = os.path.join(self.agent_params.get('tensorboard_log', "logs/"), self.env_name)
         
-        # --- SAC & HER ÖZEL AYARLARI (SAC & HER SPECIAL SETTINGS) ---
         if algo_name == "SAC":
             # SAC her zaman MultiInputPolicy kullanmalı (Goal için)
             policy_type = "MultiInputPolicy"
             
-            # YAML'dan gelen string "HerReplayBuffer"ı gerçek sınıfa çevir
             if model_kwargs.get("replay_buffer_class") == "HerReplayBuffer":
                 model_kwargs["replay_buffer_class"] = HerReplayBuffer
             
             return SAC(policy_type, self.env, tensorboard_log=tb_log, **model_kwargs)
 
-        # --- DİĞERLERİ (OTHERS) ---
         elif algo_name == "DQN":
             return DQN("MlpPolicy", self.env, tensorboard_log=tb_log, device='auto', **model_kwargs)
         elif algo_name == "PPO":
@@ -81,11 +64,9 @@ class SB3AgentManager:
         else:
             raise ValueError(f"Algorithm {algo_name} not supported yet.")
 
-    # ... (train, save, load fonksiyonları AYNI / SAME)
     def train(self):
         timesteps = self.agent_params['total_timesteps']
         
-        # 1. UNTRAINED MODEL KAYDI
         untrained_path = f"./models/{self.env_name}/untrained_{self.env_name}_model"
         print(f"Saving untrained model to {untrained_path}...")
         os.makedirs(os.path.dirname(untrained_path), exist_ok=True)
@@ -93,12 +74,10 @@ class SB3AgentManager:
         
         callbacks = []
 
-        # A) Half-Trained Callback
         half_path = f"./models/{self.env_name}/half_trained_{self.env_name}_model"
         half_callback = SaveHalfwayCallback(save_path=half_path, total_timesteps=timesteps)
         callbacks.append(half_callback)
 
-        # B) Regular Checkpoints
         freq = self.agent_params.get('checkpoint_freq', 0)
         if freq > 0:
             save_freq = max(freq // 4, 1)

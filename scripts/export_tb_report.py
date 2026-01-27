@@ -1,19 +1,3 @@
-"""
-Export TensorBoard scalars to PNG plots for a "web report" README.
-
-Usage:
-  python scripts/export_tb_report.py --logdir logs/tensorboard --outdir assets
-
-It will:
-  - Find all event files under --logdir
-  - Group runs by env_id folder (e.g. logs/tensorboard/highway-v0/...)
-  - Export common SB3 scalar plots into assets/
-
-Notes:
-  - This script reads TensorBoard event files that are often gitignored.
-  - It is safe to run locally; commit only the generated PNGs in assets/ if desired.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -26,7 +10,6 @@ from tensorboard.backend.event_processing.event_accumulator import EventAccumula
 
 
 COMMON_TAGS = [
-    # SB3 common
     "rollout/ep_rew_mean",
     "rollout/ep_len_mean",
     "train/loss",

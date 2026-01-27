@@ -1,47 +1,37 @@
 env_id: "highway-v0"
-# Render mode kesinlikle null olmalı! / Render mode must be null!
 render_mode: null 
 
 env_params:
   observation:
     type: "Kinematics"
-    vehicles_count: 10       # Yakındaki 10 aracı gör (sağ/sol/ön)
-    features: ["presence", "x", "y", "vx", "vy"]  # Konum ve hız bilgisi
-    absolute: false          # Göreceli konum → sağ/sol/ön algılaması
-    order: "sorted"          # En yakın araçlar önce
-    normalize: true          # Değerleri normalize et (öğrenme kolaylığı)
+    vehicles_count: 10       
+    features: ["presence", "x", "y", "vx", "vy"]  
+    absolute: false          
+    order: "sorted"          
+    normalize: true          
   action:
     type: "DiscreteMetaAction"
-  duration: 60               # Episode süresi
+  duration: 60               
   
-  # SİMÜLASYON AYARLARI
-  simulation_frequency: 15   # Fizik simülasyonu frekansı
-  policy_frequency: 2        # Karar frekansı (daha sık = daha hızlı tepki)
+  simulation_frequency: 15   
+  policy_frequency: 2        
   
-  # TRAFİK AYARLARI
-  lanes_count: 4             # 4 şeritli yol
-  vehicles_count: 40         # Orta yoğunlukta trafik (sollama fırsatı için)
-  vehicles_density: 1.2      # Araç yoğunluğu
+  lanes_count: 4             
+  vehicles_count: 40         
+  vehicles_density: 1.2      
   
-  # ===== ÖDÜL AYARLARI =====
-  # Toplam ödül = collision + speed + right_lane + lane_change
   
-  # 1) ÇARPIŞMA → Kesinlikle yapma
-  collision_reward: -2     # Dengeli ceza (öğrenmeyi bozmaz)
+  collision_reward: -2     
   
-  # 2) HIZ → Önü boşken hızlı git
-  high_speed_reward: 1.0     # Hızlı gitmek ödül
-  reward_speed_range: [20, 35]  # Bu aralıkta tam puan
+  high_speed_reward: 1.0     
+  reward_speed_range: [20, 35] 
   
-  # 3) ŞERİT → Sollama serbest ama zikzak yapma
-  lane_change_reward: -0.1   # Küçük ceza → gereksiz şerit değişimini engeller
-  right_lane_reward: 0.2     # Şerit tercihi yok
+  lane_change_reward: -0.1   
+  right_lane_reward: 0.2     
   
-  # 4) DİĞER
   normalize_reward: true
   offroad_terminal: false
   
-  # Araç davranışları
   other_vehicles_type: "highway_env.vehicle.behavior.IDMVehicle"
 
 
@@ -57,7 +47,7 @@ agent_params:
     n_steps: 2048
     batch_size: 64
     n_epochs: 10
-    gamma: 0.95            # Uzun vadeli düşün (sollama planlaması)
+    gamma: 0.95            
     gae_lambda: 0.95
     clip_range: 0.2
     ent_coef: 0.01
