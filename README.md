@@ -145,6 +145,12 @@ $$
 
 ### Intersection - DQN
 
+* **Algorithm (DQN):** Deep Q-Network was selected because intersection navigation is fundamentally a discrete decision-making process (Go, Yield, Stop). DQN is highly effective at mapping these distinct actions to Q-values in environments with clear success/failure states.
+* **Observation (`observe_intentions: true`):** **CRITICAL.** We enabled intention observation to make the environment fully observable. Without knowing whether other vehicles plan to turn or go straight, the agent cannot learn to yield correctly, leading to unavoidable collisions.
+* **Duration (25s):** Increased from the default to 25 seconds. Intersection safety often requires patience (waiting for a gap). A short duration forces the agent to be aggressive to avoid timeout penalties; extending it allows for safe, defensive driving behaviors.
+* **Reward Shaping:** We assigned a high `arrived_reward` (+10) relative to the collision penalty (-5). Since reaching the specific destination ("o1") is a sparse event, a strong positive signal is necessary to drive exploration towards the goal.
+
+
 | Param | Value |
 |-------|-------|
 | net_arch | [256, 256] |
