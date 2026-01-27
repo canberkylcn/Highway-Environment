@@ -231,27 +231,43 @@ The Value Loss graph represents the error between the Critic network's predicted
 
 ---
 
-### Intersection Reward Curve
-[DRAG YOUR GRAPH: assets/tb/intersection-v1/rollout__ep_rew_mean__DQN_2.png]
+## 📈 Training Analysis: Intersection Scenario
 
-**Analysis:**
-- Phase 1 (0-300): Braking default, reward ≈ -4
-- Phase 2 (300-800): Speed range discovery, rises to +8
-- Phase 3 (800+): Reliable crossing, plateaus at +15
+### Episode Length (Efficiency) Analysis
+**The Graph:**
 
-**Key:** Tight reward range [7, 9] forced crossing commitment.
+<img width="1424" height="700" alt="rollout__ep_len_mean__DQN_2" src="https://github.com/user-attachments/assets/68fbb560-5634-4ffc-9fc9-db1136e84517" />
+
+**The Commentary:**
+The graph above shows the mean episode length over 100,000 timesteps for the DQN agent. Unlike the Merge scenario where "longer is better," in the Intersection task, a decrease in episode length often signifies **efficiency**.
+* **Exploration Phase (0 - 5k steps):** The sharp spike to ~10.5 indicates the agent initially learned to survive by being overly cautious or hesitant, waiting at the intersection to avoid penalties.
+* **Optimization Phase (5k - 20k steps):** We observe a significant decrease in episode length (from 10.5 down to ~7.5). This is the "Aha! moment." The agent realized that simply waiting does not yield the maximum reward. Instead, it learned to navigate to the destination 'o1' quickly to secure the `arrived_reward` (+10).
+* **Convergence (20k - 100k steps):** The graph stabilizes around 7.5. This steady state proves the agent has found an optimal path and speed profile to cross the intersection safely and efficiently without unnecessary delays.
 
 ---
 
-### Parking Reward Curve
-[DRAG YOUR GRAPH: assets/tb/parking-v0/rollout__ep_rew_mean__SAC_1.png]
+## 📈 Training Analysis: Parking Scenario
 
-**Analysis:**
-- Phase 1 (0-1200): Sparse rewards, nearly flat
-- Phase 2 (1200-3500): HER breakthrough, sharp climb
-- Phase 3 (3500+): Mastery, plateaus at +12
+### 1. Reward Mean Analysis (The Learning Curve)
+**The Graph:**
 
-**Key:** HER made this task learnable (5-10x speedup).
+<img width="1424" height="700" alt="rollout__ep_rew_mean__SAC_1" src="https://github.com/user-attachments/assets/8b3cfd2a-c584-4dbd-a4de-4e8ca69eb68e" />
+
+**The Commentary:**
+The graph above illustrates the mean reward per episode over 100,000 timesteps using SAC + HER.
+* **The "Exploration Valley" (0 - 15k steps):** We observe a significant drop in rewards (down to -100). This is expected and healthy. During the `learning_starts` phase and initial exploration, the agent drives randomly, often moving *away* from the goal, resulting in large negative distance penalties.
+* **The "HER Effect" (15k - 20k steps):** There is a dramatic vertical rise in performance. This is the signature of **Hindsight Experience Replay**. The agent re-labels its failed attempts as successful outcomes for "virtual" goals, allowing it to learn complex parking maneuvers from failure data almost instantly.
+* **Convergence (60k+ steps):** The reward stabilizes near -5.0. Since the reward is based on negative distance ($-\|s-g\|$), a value close to zero indicates the agent is consistently parking with high precision.
+
+### 2. Episode Length Analysis (Efficiency)
+**The Graph:**
+
+<img width="1424" height="700" alt="rollout__ep_len_mean__SAC_1" src="https://github.com/user-attachments/assets/d9300fc9-e49a-47fd-8f50-83d0fec9d7df" />
+
+**The Commentary:**
+The episode length graph mirrors the reward graph and provides insight into the agent's efficiency.
+* **The Struggle (10k - 15k steps):** The spike to ~210 steps corresponds to the "Exploration Valley" in the reward graph. The agent is struggling to park, maneuvering aimlessly, and failing to terminate the episode successfully.
+* **Optimization (60k+ steps):** As the policy converges, the average episode length drops to ~25 steps. This is a critical metric for the Parking environment. It proves the agent isn't just parking *accurately*, but it is doing so *efficiently*—entering the spot and stopping in the minimum number of maneuvers necessary.
 
 ### Racetrack Reward Curve
 [DRAG YOUR GRAPH: assets/tb/racetrack-v0/rollout__ep_rew_mean__SAC_1.png]
