@@ -1,8 +1,6 @@
 # 🚗 Highway Environment — Reinforcement Learning Final Report
 
-**Author:** Canberk Yalçın  Bahar Gencer  Ali Sokullu
-**Date:** 27 January 2026
-
+**Author:** Canberk Yalçın, Bahar Gencer, Ali Sokullu
 ---
 
 ## 📹 Evolution Videos
@@ -283,8 +281,8 @@ The episode length graph correlates perfectly with the reward curve, showing the
 * **The Struggle (0 - 20k steps):** Initially, the episode length spikes to ~180 steps. This indicates the agent was struggling to find the parking spot or stabilize the vehicle, often running until the time limit.
 * **Optimization Phase (20k - 250k steps):** We see a steady decline in steps. As the agent masters the "parking maneuver" (switching from forward to reverse gear correctly), it minimizes unnecessary movements.
 * **Optimal Efficiency (300k+ steps):** The length settles at approximately **20 steps**. This is a critical result. It proves the agent is no longer just "stumbling" into the parking spot; it is driving directly to the coordinates and stopping immediately, achieving the goal with minimum time and fuel consumption.
+
   
-### Racetrack Reward Curve
 ## 📈 Training Analysis: Racetrack Scenario (PPO)
 
 ### 1. Episode Length Analysis (Survival & Lane Keeping)
@@ -311,27 +309,29 @@ The Value Loss graph shows the error of the Critic network in estimating expecte
 
 ---
 
-### Challenge 2: Intersection - Only Braking
+## ⚠️ Challenges & Failures
 
-**Problem:** Agent always selected "stop", never crossed.  
-**Cause:** Reward ambiguity between braking and crossing.  
-**Fix:** Narrowed speed reward range [0,20] → [7,9]  
-**Result:**
-- Before: 2% crossing success
-- After: 78% crossing success
+Reinforcement Learning is notoriously sensitive to hyperparameter tuning and reward shaping. During the development of this project, we encountered several significant challenges that required specific architectural and algorithmic adjustments.
 
----
+### 1. The "Hesitant Merger" Problem (Merge Scenario)
+* **The Failure:** In early PPO training runs, the agent learned a "fear-based" policy. Instead of merging into the highway, it would simply stop at the end of the acceleration lane to avoid the risk of collision, resulting in a local optimum.
+* **The Cause:** The default penalty for lane changing ($R_{lane\_change} < 0$) created a conflict. The agent was punished for the very action it was supposed to perform.
+* **The Solution:** We set `lane_change_reward: 0`. By removing the penalty for lateral movement, the agent felt free to explore gaps in traffic without negative feedback, leading to successful merging behavior.
 
-### Challenge 3: Parking - Oscillation
+### 2. The "Blind Turn" Dilemma (Intersection Scenario)
+* **The Failure:** The DQN agent frequently crashed into oncoming vehicles while trying to turn left. It treated all oncoming cars as if they were going straight.
+* **The Cause:** The observation space initially lacked *intention* data. The agent could see the position of other cars but not their future path (turn signals).
+* **The Solution:** We enabled `observe_intentions: true` in the environment config. This expanded the state space to include the turn signals of other vehicles, allowing the agent to distinguish between safe and unsafe gaps.
 
-**Problem:** Car oscillated at goal, success <5%.  
-**Cause:** Sparse rewards, 99% failures provided no signal.  
-**Fix:** Integrated Hindsight Experience Replay (HER)  
-**Result:**
-- Before HER: 2% success @ 1K steps
-- After HER: 82% success @ 5K steps (5-10x faster)
+### 3. The "Exploration Valley" (Parking Scenario)
+* **The Failure:** Using standard SAC, the agent struggled to find the parking spot. For the first 50,000 steps, the rewards remained at the minimum (-100) because the likelihood of randomly driving into a specific parking spot is extremely low (Sparse Reward Problem).
+* **The Solution:** We implemented **Hindsight Experience Replay (HER)**. HER allowed the agent to learn from failure by treating the final state of a failed episode as if it were the intended goal. This transformed the sparse reward problem into a dense one, causing a massive spike in learning efficiency (as seen in the training graphs).
 
----
+### 4. The "Oscillating Driver" (Racetrack Scenario)
+* **The Failure:** The agent learned to stay on the road but exhibited violent steering behavior (rapidly zig-zagging left and right).
+* **The Cause:** The agent was trying to maximize the `lane_centering_reward` instantly at every step, overcorrecting continuously.
+* **The Solution:** We introduced a high penalty for steering magnitude (`action_reward: -100`) and tuned the PPO `clip_range`. This forced the policy to favor smooth, continuous steering actions over jerky movements, resembling a professional racing line.
+
 
 ## Reproducibility
 
