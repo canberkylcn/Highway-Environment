@@ -70,17 +70,28 @@ $$
 
 ---
 
-### Parking Reward Function
+## Parking Reward Function
 
-$$R_t = \mathbf{w} \cdot \mathbf{f}(s_t, g) + R_{collision} + R_{success}$$
+The reward function is defined as a weighted $L^1$-norm distance to the goal, plus specific bonuses for successful parking and penalties for collisions.
 
-- Weights: $[1.0, 0.3, 0.0, 0.0, 0.02, 0.02]$
-- $R_{collision} = -5.0$
-- $R_{success} = 0.12$
-- HER: goal_selection_strategy = "future"
+$$
+R(s, a) = - \| s - g \|_{W} + R_{collision} + R_{success}
+$$
 
-**State:** 6-dim state + 6-dim goal  
-**Actions:** 2 continuous (throttle, steering)
+* **$- \| s - g \|_{W}$**: The dense reward component. It minimizes the weighted error between the current state $s$ and the goal state $g$.
+    * **Weights ($W$):** `[1, 0.3, 0.0, 0.0, 0.02, 0.02]` applied to `[x, y, vx, vy, cos_h, sin_h]`.
+    * **Interpretation:** The agent prioritizes **longitudinal position ($x$)** heavily, followed by lateral position ($y$). It ignores velocity errors (0.0) during the approach but cares slightly about heading alignment (0.02).
+* **$R_{collision} = -5.0$**: Penalty for colliding with obstacles or other parked cars.
+* **$R_{success} = +0.12$**: Bonus reward when the agent successfully parks within the tolerance limits.
+
+### State & Action Space
+
+* **Observation:** `KinematicsGoal`
+    * **Type:** Dict (Observation + Desired Goal + Achieved Goal).
+    * **Features:** `[x, y, vx, vy, cos_h, sin_h]`.
+    * **Normalization:** `False` (Raw coordinates in meters).
+* **Actions:** `ContinuousAction` (Throttle/Brake + Steering).
+* **Technique:** **HER (Hindsight Experience Replay)** is used to replay failed episodes as if the achieved state was the intended goal, drastically speeding up convergence.
 
 ## Racetrack Reward Function
 
