@@ -176,7 +176,7 @@ $$
 | Param | Value |
 |-------|-------|
 | net_arch | [256, 256, 256] |
-| Learning Rate | 0.004 |
+| Learning Rate | 0.004 (linear decay) |
 | buffer_size | 500,000 |
 | batch_size | 256 |
 | gamma | 0.95 |
@@ -193,7 +193,7 @@ $$
 | Param | Value |
 |-------|-------|
 | net_arch | pi: [256, 256] vf: [256, 256] |
-| Learning Rate | 0.0003 |
+| Learning Rate | 0.0003 (linear decay) |
 | n_steps | 1024 |
 | batch_size | 64 |
 | gamma | 0.99 |
