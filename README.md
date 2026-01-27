@@ -62,6 +62,10 @@ $$R_t = \mathbf{w} \cdot \mathbf{f}(s_t, g) + R_{collision} + R_{success}$$
 **State:** 6-dim state + 6-dim goal  
 **Actions:** 2 continuous (throttle, steering)
 
+### Racetrack Reward Function
+
+
+
 ---
 
 ## Algorithms & Hyperparameters
@@ -97,6 +101,9 @@ $$R_t = \mathbf{w} \cdot \mathbf{f}(s_t, g) + R_{collision} + R_{success}$$
 | gamma | 0.95 |
 | Total Steps | 100,000 |
 
+### Racetrack - PPO
+
+
 ---
 
 ## Training Analysis
@@ -127,6 +134,16 @@ $$R_t = \mathbf{w} \cdot \mathbf{f}(s_t, g) + R_{collision} + R_{success}$$
 
 ### Parking Reward Curve
 [DRAG YOUR GRAPH: assets/tb/parking-v0/rollout__ep_rew_mean__SAC_1.png]
+
+**Analysis:**
+- Phase 1 (0-1200): Sparse rewards, nearly flat
+- Phase 2 (1200-3500): HER breakthrough, sharp climb
+- Phase 3 (3500+): Mastery, plateaus at +12
+
+**Key:** HER made this task learnable (5-10x speedup).
+
+### Racetrack Reward Curve
+[DRAG YOUR GRAPH: assets/tb/racetrack-v0/rollout__ep_rew_mean__SAC_1.png]
 
 **Analysis:**
 - Phase 1 (0-1200): Sparse rewards, nearly flat
