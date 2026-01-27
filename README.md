@@ -129,12 +129,7 @@ $$
 
 | Param | Value |
 |-------|-------|
-| net_arch | - pi:
-        - 256
-        - 256
-      vf:
-        - 256
-        - 256 |
+| net_arch | pi: [256, 256] vf: [256, 256] |
 | Learning Rate | 0.0003 |
 | n_steps | 1024 |
 | batch_size | 64 |
