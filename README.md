@@ -246,29 +246,31 @@ The graph above shows the mean episode length over 100,000 timesteps for the DQN
 
 ---
 
-## 📈 Training Analysis: Parking Scenario
+## 📈 Training Analysis: Parking Scenario (SAC + HER)
 
 ### 1. Reward Mean Analysis (The Learning Curve)
 **The Graph:**
 
-<img width="1424" height="700" alt="rollout__ep_rew_mean__SAC_1" src="https://github.com/user-attachments/assets/8b3cfd2a-c584-4dbd-a4de-4e8ca69eb68e" />
+<img width="1424" height="700" alt="rollout__ep_rew_mean__SAC_1" src="https://github.com/user-attachments/assets/54b1452f-ddc0-498b-ba21-6131c3cbdccb" />
 
 **The Commentary:**
-The graph above illustrates the mean reward per episode over 100,000 timesteps using SAC + HER.
-* **The "Exploration Valley" (0 - 15k steps):** We observe a significant drop in rewards (down to -100). This is expected and healthy. During the `learning_starts` phase and initial exploration, the agent drives randomly, often moving *away* from the goal, resulting in large negative distance penalties.
-* **The "HER Effect" (15k - 20k steps):** There is a dramatic vertical rise in performance. This is the signature of **Hindsight Experience Replay**. The agent re-labels its failed attempts as successful outcomes for "virtual" goals, allowing it to learn complex parking maneuvers from failure data almost instantly.
-* **Convergence (60k+ steps):** The reward stabilizes near -5.0. Since the reward is based on negative distance ($-\|s-g\|$), a value close to zero indicates the agent is consistently parking with high precision.
+The graph above illustrates the mean reward per episode over the full 400,000 training timesteps.
+* **The "Exploration Valley" (0 - 10k steps):** We observe a sharp, deep drop in rewards (reaching nearly -90). This occurs during the `learning_starts` phase. The agent acts randomly, often driving away from the target, accumulating large negative distance penalties. This "dip" is a characteristic signature of distance-based dense rewards during initial exploration.
+* **The "HER Effect" (10k - 50k steps):** Following the dip, there is a near-vertical recovery. This demonstrates the power of **Hindsight Experience Replay**. Even though the agent failed in the early episodes, HER relabeled those failures as successes for virtual goals, allowing the agent to learn the vehicle dynamics and steering control incredibly fast.
+* **Convergence & Stability (250k - 400k steps):** The reward stabilizes around -5.0 to -6.0. Given that the maximum theoretical reward is close to 0 (perfect overlap), this indicates the agent has converged to an optimal policy, consistently parking the vehicle with high precision.
 
 ### 2. Episode Length Analysis (Efficiency)
 **The Graph:**
 
-<img width="1424" height="700" alt="rollout__ep_len_mean__SAC_1" src="https://github.com/user-attachments/assets/d9300fc9-e49a-47fd-8f50-83d0fec9d7df" />
+<img width="1424" height="700" alt="rollout__ep_len_mean__SAC_1" src="https://github.com/user-attachments/assets/36ff5bcd-7a80-4724-940e-394eda24d5c3" />
+
 
 **The Commentary:**
-The episode length graph mirrors the reward graph and provides insight into the agent's efficiency.
-* **The Struggle (10k - 15k steps):** The spike to ~210 steps corresponds to the "Exploration Valley" in the reward graph. The agent is struggling to park, maneuvering aimlessly, and failing to terminate the episode successfully.
-* **Optimization (60k+ steps):** As the policy converges, the average episode length drops to ~25 steps. This is a critical metric for the Parking environment. It proves the agent isn't just parking *accurately*, but it is doing so *efficiently*—entering the spot and stopping in the minimum number of maneuvers necessary.
-
+The episode length graph correlates perfectly with the reward curve, showing the agent's efficiency.
+* **The Struggle (0 - 20k steps):** Initially, the episode length spikes to ~180 steps. This indicates the agent was struggling to find the parking spot or stabilize the vehicle, often running until the time limit.
+* **Optimization Phase (20k - 250k steps):** We see a steady decline in steps. As the agent masters the "parking maneuver" (switching from forward to reverse gear correctly), it minimizes unnecessary movements.
+* **Optimal Efficiency (300k+ steps):** The length settles at approximately **20 steps**. This is a critical result. It proves the agent is no longer just "stumbling" into the parking spot; it is driving directly to the coordinates and stopping immediately, achieving the goal with minimum time and fuel consumption.
+  
 ### Racetrack Reward Curve
 [DRAG YOUR GRAPH: assets/tb/racetrack-v0/rollout__ep_rew_mean__SAC_1.png]
 
