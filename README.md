@@ -95,17 +95,27 @@ $$
 
 ## Racetrack Reward Function
 
+The reward function is designed to train a race car driver that prioritizes safety (staying on track) and precision (lane centering) over aggressive maneuvers.
+
 $$
 R_{t} = R_{collision} + R_{centering} + R_{lane\_change} + R_{action}
 $$
 
-* **$R_{collision} = -1000$**: Terminal penalty for crashing or going off-road.
-* **$R_{centering}$**: Reward for keeping the vehicle close to the lane center (defined by `lane_centering_reward: 1` and `lane_centering_cost: 4`).
-* **$R_{lane\_change} = -0.05$**: Small penalty to discourage unnecessary lane changes.
-* **$R_{action} = -100$**: Penalty for high-magnitude steering actions to encourage smooth driving.
+* **$R_{collision} = -1000$**: Terminal penalty for going off-road or crashing. Since `terminate_off_road: true`, the episode ends immediately.
+* **$R_{centering}$**: Dense reward for maintaining the ideal racing line (center of the lane).
+    * Defined by `lane_centering_reward: 1` and a high sensitivity `lane_centering_cost: 4`.
+* **$R_{lane\_change} = -0.05$**: Small penalty to discourage unnecessary weaving or zigzagging on straight roads.
+* **$R_{action} = -100$**: High penalty for high-magnitude steering actions. This forces the agent to drive very smoothly and avoid jerky steering inputs.
 
-**State:** OccupancyGrid (12x12 grid $\times$ 11 features)
-**Actions:** Continuous Lateral (Steering only)
+### State & Action Space
+
+* **Observation:** `OccupancyGrid`
+    * **Dimensions:** $12 \times 12$ Grid (Calculated from range $\pm18$ and step $3$).
+    * **Features:** 11 channels (`presence`, `on_road`, `x`, `y`, `vx`, `vy`, `cos_h`, `sin_h`, `long_off`, `lat_off`, `ang_off`).
+    * **Total Shape:** $(12, 12, 11)$.
+* **Actions:** `ContinuousAction`
+    * **Lateral:** True (Steering control).
+    * **Longitudinal:** False (Speed is fixed/automatic based on `target_speeds`).
 
 
 ---
