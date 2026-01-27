@@ -16,6 +16,9 @@
 ### Parking (parking-v0) — SAC+HER
 [DRAG YOUR VIDEO: assets/videos/parking-v0_evolution.mp4]
 
+### Racetrack (racetrack-v0) — PPO
+[DRAG YOUR VIDEO: assets/videos/merge-v0_evolution.mp4]
+
 ---
 
 ## Methodology
