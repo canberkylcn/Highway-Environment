@@ -62,8 +62,19 @@ $$R_t = \mathbf{w} \cdot \mathbf{f}(s_t, g) + R_{collision} + R_{success}$$
 **State:** 6-dim state + 6-dim goal  
 **Actions:** 2 continuous (throttle, steering)
 
-### Racetrack Reward Function
+## Racetrack Reward Function
 
+$$
+R_{t} = R_{collision} + R_{centering} + R_{lane\_change} + R_{action}
+$$
+
+* **$R_{collision} = -1000$**: Terminal penalty for crashing or going off-road.
+* **$R_{centering}$**: Reward for keeping the vehicle close to the lane center (defined by `lane_centering_reward: 1` and `lane_centering_cost: 4`).
+* **$R_{lane\_change} = -0.05$**: Small penalty to discourage unnecessary lane changes.
+* **$R_{action} = -100$**: Penalty for high-magnitude steering actions to encourage smooth driving.
+
+**State:** OccupancyGrid (12x12 grid $\times$ 11 features)
+**Actions:** Continuous Lateral (Steering only)
 
 
 ---
