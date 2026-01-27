@@ -114,7 +114,16 @@ $$
 
 ### Racetrack - PPO
 
-
+| Param | Value |
+|-------|-------|
+| Learning Rate | 0.0003 |
+| n_steps | 1024 |
+| batch_size | 64 |
+| gamma | 0.99 |
+| Total Steps | 300,000 |
+|gae_lambda| 0.95 |
+|clip_range| 0.2|
+|ent_coef|0.0|
 ---
 
 ## Training Analysis
