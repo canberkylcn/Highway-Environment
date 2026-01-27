@@ -131,7 +131,7 @@ $$
 
 | Param | Value |
 |-------|-------|
-| Learning Rate | 0.0003 |
+| Learning Rate | 0.0003 (linear decay) | 
 | n_steps | 2048 |
 | batch_size | 64 |
 | n_epochs| 10 |
@@ -152,7 +152,7 @@ $$
 | Param | Value |
 |-------|-------|
 | net_arch | [256, 256] |
-| Learning Rate | 0.0005 |
+| Learning Rate | 0.0005 (linear decay) | 
 | buffer_size | 50,000 |
 | batch_size | 32 |
 | gamma | 0.99 |
