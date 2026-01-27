@@ -212,7 +212,7 @@ $$
 ### 1. Episode Length (Survival) Analysis
 **The Graph:**
 
-<img width="1423" height="700" alt="train__value_loss__PPO_1" src="https://github.com/user-attachments/assets/9756b84f-2cb5-47d5-b309-608c1d0cbccd" />
+<img width="1424" height="700" alt="rollout__ep_len_mean__PPO_1" src="https://github.com/user-attachments/assets/a3f5333d-110d-402a-b581-aab4a228d5f8" />
 
 **The Commentary:**
 The graph above illustrates the mean episode length over 200,000 timesteps. In the `merge-v0` environment, a short episode typically indicates an immediate collision.
@@ -222,7 +222,7 @@ The graph above illustrates the mean episode length over 200,000 timesteps. In t
 ### 2. Value Loss Analysis
 **The Graph:**
 
-<img width="1423" height="700" alt="train__value_loss__PPO_1" src="https://github.com/user-attachments/assets/9756b84f-2cb5-47d5-b309-608c1d0cbccd" />
+<img width="1423" height="700" alt="train__value_loss__PPO_1" src="https://github.com/user-attachments/assets/dae74ada-9aa2-4738-9598-167fda1e4f8c" />
 
 **The Commentary:**
 The Value Loss graph represents the error between the Critic network's predicted return and the actual return.
@@ -231,7 +231,6 @@ The Value Loss graph represents the error between the Critic network's predicted
 
 ---
 
-## 📈 Training Analysis: Intersection Scenario
 
 ## 📈 Training Analysis: Intersection Scenario (DQN)
 
@@ -286,27 +285,29 @@ The episode length graph correlates perfectly with the reward curve, showing the
 * **Optimal Efficiency (300k+ steps):** The length settles at approximately **20 steps**. This is a critical result. It proves the agent is no longer just "stumbling" into the parking spot; it is driving directly to the coordinates and stopping immediately, achieving the goal with minimum time and fuel consumption.
   
 ### Racetrack Reward Curve
-[DRAG YOUR GRAPH: assets/tb/racetrack-v0/rollout__ep_rew_mean__SAC_1.png]
+## 📈 Training Analysis: Racetrack Scenario (PPO)
 
-**Analysis:**
-- Phase 1 (0-1200): Sparse rewards, nearly flat
-- Phase 2 (1200-3500): HER breakthrough, sharp climb
-- Phase 3 (3500+): Mastery, plateaus at +12
+### 1. Episode Length Analysis (Survival & Lane Keeping)
+**The Graph:**
 
-**Key:** HER made this task learnable (5-10x speedup).
+<img width="1424" height="700" alt="rollout__ep_len_mean__PPO_1" src="https://github.com/user-attachments/assets/3054a15d-844b-450f-ab21-70e90f5e3de7" />
 
----
+**The Commentary:**
+The graph above illustrates the mean episode length over 300,000 timesteps. In the Racetrack environment where `terminate_off_road: true` is enabled, episode length is a direct proxy for driving capability.
+* **The "Crash Phase" (0 - 25k steps):** The episode length starts very low (< 50 steps). This indicates the agent is crashing or going off-road almost immediately after the start. It has not yet correlated the Occupancy Grid features with the track boundaries.
+* **The Learning Climb (25k - 200k steps):** We observe a near-linear increase in survival time. This is a strong indicator that the PPO algorithm is effectively optimizing the policy. The agent is learning to steer correctly to stay within the lanes, avoiding the -1000 collision penalty.
+* **Mastery & Plateau (200k+ steps):** The curve peaks and stabilizes around **480 steps**. This suggests the agent has mastered the track layout and can consistently drive for the maximum allowed duration without crashing.
 
-## Challenges & Solutions
+### 2. Value Loss Analysis (Critic Stability)
+**The Graph:**
 
-### Challenge 1: Merge - Agent Refuses Lanes
+<img width="1424" height="700" alt="train__value_loss__PPO_1" src="https://github.com/user-attachments/assets/53c52272-cffd-40de-9d0b-271cbfc52245" />
 
-**Problem:** Agent stayed in lane despite opportunities.  
-**Cause:** Lane-change penalty discouraged exploration.  
-**Fix:** Changed `lane_change_reward: -0.1 → 0`  
-**Result:** 
-- Before: 12% success, reward +6
-- After: 92% success, reward +20
+**The Commentary:**
+The Value Loss graph shows the error of the Critic network in estimating expected returns.
+* **Initial Shock (0 - 25k steps):** There is a sharp spike in loss (up to ~10.0). This is expected due to the sparse and massive penalty of -1000 for collisions. Initially, the Critic struggles to predict whether a state will lead to a sudden catastrophic end.
+* **Convergence (50k - 175k steps):** As the agent learns to stay on track (correlated with the Episode Length graph), the Critic's prediction error drops drastically.
+* **Stability (200k+ steps):** The loss converges to near zero (< 1.0). This confirms that the Critic has accurately mapped the state space (Occupancy Grid) to the expected rewards, providing stable gradients for the Actor network.
 
 ---
 
