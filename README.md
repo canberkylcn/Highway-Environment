@@ -41,16 +41,32 @@ $$
 
 ---
 
-### Intersection Reward Function
+## Intersection Reward Function
 
-$$R_t = R_{collision} + R_{speed} + R_{arrival}$$
+The reward function is designed to teach the agent to navigate a busy intersection, negotiate with other drivers, and reach the specific destination **"o1"**.
 
-- $R_{collision} = -5.0$
-- $R_{speed} = 1.0$ (when v in [7.0, 9.0] m/s - TIGHT RANGE)
-- $R_{arrival} = 1.0$
+$$
+R_{t} = R_{collision} + R_{arrived} + R_{speed}
+$$
 
-**State:** 15 vehicles × 7 features  
-**Actions:** 3 discrete speeds (0, 4.5, 9 m/s)
+* **$R_{collision} = -5$**: Penalty for colliding with other vehicles. (Note: `offroad_terminal` is false, allowing the agent to recover from minor errors if possible).
+* **$R_{arrived} = +10$**: Significant reward for successfully exiting the intersection at the correct destination (o1).
+* **$R_{speed}$**: Reward mapped linearly to the speed range $[0, 9]$ m/s. Even low speeds are acceptable to encourage patience (waiting for a gap), unlike highway scenarios.
+
+### State & Action Space
+
+* **Observation (State):** `Kinematics` (Flattened Vector)
+    * **Capacity:** Observes the **15 closest vehicles** to eliminate blind spots.
+    * **Features:** `[presence, x, y, vx, vy, cos_h, sin_h]` (Absolute coordinates).
+    * **Intentions:** `observe_intentions: true` is enabled, allowing the agent to infer if other cars are turning or going straight.
+    
+* **Actions:** `DiscreteMetaAction`
+    * Combined **Longitudinal** (Speed) and **Lateral** (Steering) control.
+    * **Speeds:** `[0, 4.5, 9]` (Allows full stop for yielding, slow approach, and fast crossing).
+
+### Environment Dynamics
+* **Duration:** 25 seconds (Extended to allow "patience" at the intersection).
+* **Traffic Density:** High (Spawn probability 0.6, Initial count 10).
 
 ---
 
