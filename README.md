@@ -1,6 +1,6 @@
 # 🚗 Highway Environment — Reinforcement Learning Final Report
 
-**Author:** Canberk Yalçın , Bahar Gencer , Ali Sokullu
+**Author:** Canberk Yalçın  Bahar Gencer  Ali Sokullu
 **Date:** 27 January 2026
 
 ---
